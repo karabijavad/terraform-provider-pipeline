@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"errors"
+	"fmt"
 
 	"github.com/antihax/optional"
 	pipeline "github.com/banzaicloud/banzai-cli/.gen/pipeline"
@@ -67,7 +67,10 @@ func resourcePipelineAwsSecretCreate(d *schema.ResourceData, m interface{}) erro
 	if err != nil {
 		logWithFields.Error(err)
 		if err.Error() == "409 Conflict" {
-			return errors.New("Resource already exists")
+			return fmt.Errorf(
+				"Secret with name %s already exists",
+				d.Get("name"),
+			)
 		}
 		panic(err)
 	}
