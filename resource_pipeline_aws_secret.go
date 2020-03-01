@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	"github.com/antihax/optional"
-	pipeline "github.com/banzaicloud/banzai-cli/.gen/pipeline"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	pipeline "github.com/karabijavad/terraform-provider-pipeline/.gen/pipeline"
 	log "github.com/sirupsen/logrus"
 )
 

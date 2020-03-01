@@ -26,5 +26,8 @@ generate-pipeline-client:
 	echo "package pipeline\n\nconst PipelineVersion = \"${PIPELINE_VERSION}\"" > .gen/pipeline/version.go
 	sed 's#jsonCheck = .*#jsonCheck = regexp.MustCompile(`(?i:(?:application|text)/(?:(?:vnd\\.[^;]+\\+)|(?:problem\\+))?json)`)#' .gen/pipeline/client.go > .gen/pipeline/client.go.new
 	mv .gen/pipeline/client.go.new .gen/pipeline/client.go
+	-rm .gen/pipeline/.travis.yml
+	-rm .gen/pipeline/git_push.sh
+	-rm .gen/pipeline/go.*
 
 all: terraform-provider-pipeline tf

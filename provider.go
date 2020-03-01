@@ -1,8 +1,8 @@
 package main
 
 import (
-	pipeline "github.com/banzaicloud/banzai-cli/.gen/pipeline"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	pipeline "github.com/karabijavad/terraform-provider-pipeline/.gen/pipeline"
 	"golang.org/x/oauth2"
 )
 
