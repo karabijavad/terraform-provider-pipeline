@@ -2,12 +2,12 @@ package main
 
 import (
 	"context"
-	"log"
-	"os"
+	"errors"
 
 	"github.com/antihax/optional"
 	pipeline "github.com/banzaicloud/banzai-cli/.gen/pipeline"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
+	log "github.com/sirupsen/logrus"
 )
 
 func resourcePipelineAwsSecret() *schema.Resource {
@@ -39,6 +39,12 @@ func resourcePipelineAwsSecret() *schema.Resource {
 }
 
 func resourcePipelineAwsSecretCreate(d *schema.ResourceData, m interface{}) error {
+	logWithFields := log.WithFields(log.Fields{
+		"name": d.Get("name"),
+	})
+
+	logWithFields.Debug("creating secret")
+
 	client := m.(pipelineProvider).client
 	organizationID := m.(pipelineProvider).organizationID
 
@@ -59,6 +65,10 @@ func resourcePipelineAwsSecretCreate(d *schema.ResourceData, m interface{}) erro
 		},
 	)
 	if err != nil {
+		logWithFields.Error(err)
+		if err.Error() == "409 Conflict" {
+			return errors.New("Resource already exists")
+		}
 		panic(err)
 	}
 	d.SetId(response.Id)
@@ -73,13 +83,6 @@ type MissingSecretResponse struct {
 }
 
 func resourcePipelineAwsSecretRead(d *schema.ResourceData, m interface{}) error {
-	f, err := os.OpenFile("terraform-provider-banzaicloud.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0755)
-	if err != nil {
-		log.Fatalf("error opening file: %v", err)
-	}
-	defer f.Close()
-	log.SetOutput(f)
-
 	client := m.(pipelineProvider).client
 	organizationID := m.(pipelineProvider).organizationID
 	secret, response, err := client.SecretsApi.GetSecret(context.Background(), organizationID, d.Id())
