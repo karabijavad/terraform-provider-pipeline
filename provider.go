@@ -6,7 +6,7 @@ import (
 	"golang.org/x/oauth2"
 )
 
-type banzaiCloudProvider struct {
+type pipelineProvider struct {
 	client         *pipeline.APIClient
 	organizationID int32
 }
@@ -20,11 +20,11 @@ func configureProvider(d *schema.ResourceData) (interface{}, error) {
 	client := pipeline.NewAPIClient(&pipeline.Configuration{
 		BasePath:      d.Get("api_url").(string),
 		DefaultHeader: make(map[string]string),
-		UserAgent:     "terraform-provider-banzaicloud",
+		UserAgent:     "terraform-provider-pipeline",
 		Debug:         true,
 		HTTPClient:    httpClient,
 	})
-	return banzaiCloudProvider{
+	return pipelineProvider{
 		client:         client,
 		organizationID: int32(d.Get("organization_id").(int)),
 	}, nil
@@ -49,7 +49,7 @@ func Provider() *schema.Provider {
 			},
 		},
 		ResourcesMap: map[string]*schema.Resource{
-			"banzaicloud_aws_secret": resourceBanzaiCloudAwsSecret(),
+			"pipeline_aws_secret": resourcePipelineAwsSecret(),
 		},
 	}
 }

@@ -1,10 +1,10 @@
 PIPELINE_VERSION = 0.37.0
 OPENAPI_GENERATOR_VERSION = v4.2.2
 
-terraform-provider-banzaicloud: *.go
-	go build -o terraform-provider-banzaicloud
+terraform-provider-pipeline: *.go
+	go build -o terraform-provider-pipeline
 
-tf: terraform-provider-banzaicloud
+tf: terraform-provider-pipeline
 	terraform init
 	terraform apply
 
@@ -27,4 +27,4 @@ generate-pipeline-client:
 	sed 's#jsonCheck = .*#jsonCheck = regexp.MustCompile(`(?i:(?:application|text)/(?:(?:vnd\\.[^;]+\\+)|(?:problem\\+))?json)`)#' .gen/pipeline/client.go > .gen/pipeline/client.go.new
 	mv .gen/pipeline/client.go.new .gen/pipeline/client.go
 
-all: terraform-provider-banzaicloud tf
+all: terraform-provider-pipeline tf

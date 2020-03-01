@@ -10,12 +10,12 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 )
 
-func resourceBanzaiCloudAwsSecret() *schema.Resource {
+func resourcePipelineAwsSecret() *schema.Resource {
 	return &schema.Resource{
-		Create: resourceBanzaiCloudAwsSecretCreate,
-		Read:   resourceBanzaiCloudAwsSecretRead,
-		Update: resourceBanzaiCloudAwsSecretUpdate,
-		Delete: resourceBanzaiCloudAwsSecretDelete,
+		Create: resourcePipelineAwsSecretCreate,
+		Read:   resourcePipelineAwsSecretRead,
+		Update: resourcePipelineAwsSecretUpdate,
+		Delete: resourcePipelineAwsSecretDelete,
 
 		Schema: map[string]*schema.Schema{
 			"name": &schema.Schema{
@@ -38,9 +38,9 @@ func resourceBanzaiCloudAwsSecret() *schema.Resource {
 	}
 }
 
-func resourceBanzaiCloudAwsSecretCreate(d *schema.ResourceData, m interface{}) error {
-	client := m.(banzaiCloudProvider).client
-	organizationID := m.(banzaiCloudProvider).organizationID
+func resourcePipelineAwsSecretCreate(d *schema.ResourceData, m interface{}) error {
+	client := m.(pipelineProvider).client
+	organizationID := m.(pipelineProvider).organizationID
 
 	out := &pipeline.CreateSecretRequest{
 		Name: d.Get("name").(string),
@@ -63,7 +63,7 @@ func resourceBanzaiCloudAwsSecretCreate(d *schema.ResourceData, m interface{}) e
 	}
 	d.SetId(response.Id)
 
-	return resourceBanzaiCloudAwsSecretRead(d, m)
+	return resourcePipelineAwsSecretRead(d, m)
 }
 
 type MissingSecretResponse struct {
@@ -72,7 +72,7 @@ type MissingSecretResponse struct {
 	error   string
 }
 
-func resourceBanzaiCloudAwsSecretRead(d *schema.ResourceData, m interface{}) error {
+func resourcePipelineAwsSecretRead(d *schema.ResourceData, m interface{}) error {
 	f, err := os.OpenFile("terraform-provider-banzaicloud.log", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0755)
 	if err != nil {
 		log.Fatalf("error opening file: %v", err)
@@ -80,8 +80,8 @@ func resourceBanzaiCloudAwsSecretRead(d *schema.ResourceData, m interface{}) err
 	defer f.Close()
 	log.SetOutput(f)
 
-	client := m.(banzaiCloudProvider).client
-	organizationID := m.(banzaiCloudProvider).organizationID
+	client := m.(pipelineProvider).client
+	organizationID := m.(pipelineProvider).organizationID
 	secret, response, err := client.SecretsApi.GetSecret(context.Background(), organizationID, d.Id())
 	if err != nil {
 		if response.StatusCode == 400 {
@@ -98,9 +98,9 @@ func resourceBanzaiCloudAwsSecretRead(d *schema.ResourceData, m interface{}) err
 	return nil
 }
 
-func resourceBanzaiCloudAwsSecretUpdate(d *schema.ResourceData, m interface{}) error {
-	client := m.(banzaiCloudProvider).client
-	organizationID := m.(banzaiCloudProvider).organizationID
+func resourcePipelineAwsSecretUpdate(d *schema.ResourceData, m interface{}) error {
+	client := m.(pipelineProvider).client
+	organizationID := m.(pipelineProvider).organizationID
 	out := &pipeline.CreateSecretRequest{
 		Name: d.Get("name").(string),
 		Type: "amazon",
@@ -122,9 +122,9 @@ func resourceBanzaiCloudAwsSecretUpdate(d *schema.ResourceData, m interface{}) e
 	return nil
 }
 
-func resourceBanzaiCloudAwsSecretDelete(d *schema.ResourceData, m interface{}) error {
-	client := m.(banzaiCloudProvider).client
-	organizationID := m.(banzaiCloudProvider).organizationID
+func resourcePipelineAwsSecretDelete(d *schema.ResourceData, m interface{}) error {
+	client := m.(pipelineProvider).client
+	organizationID := m.(pipelineProvider).organizationID
 	_, err := client.SecretsApi.DeleteSecrets(context.Background(), organizationID, d.Id())
 	if err != nil {
 		panic(err)
